@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crud operation using Ajax</title>
+    <style>
+        #modal{
+            background: rgb(0,0,0,0.7);
+            position:fixed;
+            left:0;
+            top:0;
+            width:100%;
+            height:100%;
+            z-index:100;
+            display:none;
+
+        }
+        #modal-form{
+            background:#fff;
+            width:30%;
+            position:relative;
+            top:20%;    
+            left:calc(50%-15%);
+            padding:15px;
+            border-radius:4px;
+
+        }
+        #close-btn{
+            background:red;
+            color: white;
+            width:30px;
+            height:30px;
+            line-height: 30px;
+            TEXT-ALIGN:text-center;
+            border-radius: 50%;
+            position:absolute;
+            top:-15px;
+            right:20px;
+            cursor: pointer;
+
+        }
+
+    </style>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="conatiner">
+        <div class="rows">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h1 class="text-center text-dark">Add Data </h1>
+                    <form id="AddData">
+                        <div class="form-group">
+                        <lable for="name">Name</lable>
+                        <input type="text" class="form-control" placeholder="Name" id="fname" required> 
+                    </div>
+                    <div class="form-group">
+                        <lable for="lname">LastName</lable>
+                        <input type="text" class="form-control" placeholder="LastName" id="lname">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="btn"  >Add Data</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="cla"></div>
+<div id="id"></div>
+<div id="modal">
+    <h2>Update Form</h2>
+    <div id="modal-form"></div>
+       
+       
+                        <div id="close-btn">X</div>
+    
+</div>
+
+    <script type="text/javascript" src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            function loaddata() {
+                  $.ajax({
+                    url:"data.php",
+                    type:"POST",
+                    success:function(data){
+                      $('#id').html(data);
+                    }
+
+
+
+                });
+
+
+            }
+            loaddata();
+            $('#btn').on('click', function(e){
+                e.preventDefault();
+                var fname=$('#fname').val();
+                var lname=$('#lname').val();
+                // alert('hello');
+                $.ajax({
+                    url:'insertdata.php',
+                    type:'POST',
+                    data:{first_name:fname,last_name:lname},
+                    success: function(data){
+                        $('#AddData').trigger('reset');
+                        $('#cla').html('<p class="text-success">Added Data Successfully</p>');
+                        loaddata();
+                    }
+
+
+                })
+
+
+
+            })
+            $(document).on('click','.delete-btn',function(){
+                var studentid=$(this).data('id');
+                alert('Do you really want to delete values of id '+studentid);
+                // var element=this;
+                $.ajax({
+                    url:"delete.php",
+                    type:"POST",
+                    data:{id:studentid},
+                    success:function(data){
+                        loaddata();
+
+                    }
+
+
+                })
+
+
+            })
+            $(document).on('click','.edit-btn',function(){
+                    $('#modal').show();
+                    var studentid=$(this).data('eid');
+                    // alert(studentid);
+                    $.ajax({
+                        url: 'update.php',
+                        type: 'POST',
+                        data:{id:studentid},
+                        success: function(data){
+                            $('#modal-form').html(data);
+                        }
+
+
+                    })
+
+            })
+      
+            $('#close-btn').on('click',function(){
+                $('#modal').hide();
+
+
+
+            })
+      
+            $(document).on('click','#edit-submit',function(){
+                var stuid=$('#edit-id').val();
+                var fname=$('#edit-fname').val();
+                var lname=$('#edit-lname').val();
+                // alert(stuid);
+                $.ajax({
+                    url:'update-form.php',
+                    type:'POST',
+                    data:{id:stuid,first_name:fname,last_name:lname},
+                    success:function(data){
+                        $('#modal').hide();
+                        loaddata();
+                    }
+
+
+                })
+            
+            
+            
+            })
+        })
+
+
+
+
+    </script>
+</body>
+</html>
